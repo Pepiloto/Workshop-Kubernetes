@@ -1,15 +1,23 @@
 const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 const app = express();
-const port = 3000;
+const port = 5000;
 
-// Définir une route pour la méthode GET
-app.get('/', (req, res) => {
-    res.send('1');
-});
+app.use(express.static(path.join(__dirname, 'client/build')));
 
-app.get('/chien', (req, res) => {
-    res.send('chat');
-});
+app.use(cors());  
+
+app.use(bodyParser.json());
+
+
+// Définir une rapp.use(cors());  oute pour la méthode GET
+app.post('/chien', (req, res) => {
+    const { breed } = req.body;
+    // Traitement de la requête POST, par exemple, renvoyer un message avec la race du chien
+    res.json({ message: `${breed === 'chien' ? 'chat' : 'chien'}` });
+  });
 
 // Intercepter le signal SIGTERM
 process.on('SIGTERM', () => {

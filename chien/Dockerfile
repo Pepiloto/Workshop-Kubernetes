@@ -1,20 +1,25 @@
-# Utilisez une image Node.js légère comme base
-FROM node:14-alpine
-
-# Définissez le répertoire de travail dans le conteneur
-WORKDIR /usr/src/app
-
-# Copiez le fichier package.json et package-lock.json (le cas échéant)
-COPY package*.json ./
-
-# Installez les dépendances
+# POUR RUN LES 2 EN MEME TEMPS
+# Stage 1: Build React App
+FROM node:14-alpine as build
+WORKDIR /app
+COPY ./client/package*.json ./
 RUN npm install
+COPY ./client ./
+RUN npm run build
 
-# Copiez le reste des fichiers de l'application
-COPY . .
+# Stage 2: Build Express Server
+FROM node:14-alpine
+WORKDIR /app
+COPY ./server/package*.json ./
+RUN npm install
+COPY ./server ./
 
-# Exposez le port sur lequel l'application s'exécutera
-EXPOSE 3000
+# Copy built React app from Stage 1
+COPY --from=build /app/build ./client/build
 
-# Commande pour démarrer l'application
-CMD ["node", "app.js"]
+# Expose the port on which the Express server will run
+EXPOSE 5000
+
+# Start the Express server
+CMD ["npm", "start"]
+

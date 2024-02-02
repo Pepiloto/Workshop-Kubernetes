@@ -1,0 +1,10 @@
+# Utilisez une image Node.js légère comme base pour le backend
+FROM node:14-alpine
+WORKDIR /app
+COPY ./server/package*.json ./
+RUN npm install
+COPY ./server ./
+
+# Exposez le port sur lequel le serveur Express s'exécutera
+EXPOSE 5000
+CMD ["node", "server.js"]
