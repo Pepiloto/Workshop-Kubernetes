@@ -1,1 +1,3 @@
 ./chien/node_modules
+terraform/.terraform
+terraform/*.tfstate
