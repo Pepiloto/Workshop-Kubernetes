@@ -3,35 +3,37 @@ provider "kubernetes" {
   config_context = "kind-kind"
 }
 
-resource "kubernetes_namespace" "namespace" {
+resource "kubernetes_namespace" "env" {
+  count = length(var.envs)
   metadata {
-    name = "app"
+    name = "app-${var.envs[count.index]}"
   }
 }
 
 resource "kubernetes_deployment" "deployment" {
+    count = length(var.envs)
   metadata {
-    name = "myapp"
-    namespace = "app"
+    name = "myapp-${var.envs[count.index]}"
+    namespace = "app-${var.envs[count.index]}"
   }
   spec {
-    replicas = 3
+    replicas = 1
     selector {
       match_labels = {
-        app = "myapp"
+        app = "myapp-${var.envs[count.index]}"
       }
     }
     template {
       metadata {
         labels = {
-          app = "myapp"
+          app = "myapp-${var.envs[count.index]}"
         }
       }
       spec {
         container {
           image = "app:latest"
           image_pull_policy = "IfNotPresent"
-          name  = "myapp"
+          name  = "myapp-${var.envs[count.index]}"
           resources {
             limits = {
               cpu    = "0.5"
